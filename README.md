@@ -1,4 +1,4 @@
-# NYC Ride-Hailing Data Analysis
+# Urban Taxi Data Analytics
 
 This project analyzes 85 million trip records from NYC yellow taxis, Uber, and Lyft for the third quarter of 2023. The goal is to uncover hidden trends in pricing, trip duration, and profitability to improve service quality, while providing an interactive interface for comparing ride-hailing options in real time.
 
