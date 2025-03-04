@@ -1,0 +1,65 @@
+--Below is a BigQuery SQL script that creates an analytics warehouse view by joining the fact table with all the dimension tables.
+--Replace the name of the Database and Project.
+
+CREATE OR REPLACE VIEW `Taxi_Analytics.nyc_taxi_data.analytics_warehouse` AS
+SELECT
+  ft.trip_id,
+  ft.pickup_datetime,
+  ft.dropoff_datetime,
+  
+  -- Pickup Date Details
+  d1.full_date AS pickup_date,
+  d1.year AS pickup_year,
+  d1.month AS pickup_month,
+  d1.day AS pickup_day,
+  d1.day_name AS pickup_day_name,
+  d1.month_name AS pickup_month_name,
+  d1.quarter AS pickup_quarter,
+  
+  -- Dropoff Date Details
+  d2.full_date AS dropoff_date,
+  d2.year AS dropoff_year,
+  d2.month AS dropoff_month,
+  d2.day AS dropoff_day,
+  d2.day_name AS dropoff_day_name,
+  d2.month_name AS dropoff_month_name,
+  d2.quarter AS dropoff_quarter,
+  
+  -- Vendor and Rate Code
+  v.vendor_name,
+  rc.rate_code_desc,
+  
+  -- Payment Type and Location
+  pt.payment_type_desc,
+  loc.borough,
+  loc.zone,
+  loc.service_zone,
+  
+  -- Fact Measures
+  ft.passenger_count,
+  ft.trip_distance,
+  ft.store_and_fwd_flag,
+  ft.fare_amount,
+  ft.extra,
+  ft.mta_tax,
+  ft.improvement_surcharge,
+  ft.tip_amount,
+  ft.tolls_amount,
+  ft.total_amount,
+  ft.airport_fee
+
+FROM `Taxi_Analytics.nyc_taxi_data.fact_trips` ft
+LEFT JOIN `Taxi_Analytics.nyc_taxi_data.dim_vendor` v 
+    ON ft.vendor_id = v.vendor_id
+LEFT JOIN `Taxi_Analytics.nyc_taxi_data.dim_date` d1 
+    ON ft.pickup_date_id = d1.date_id
+LEFT JOIN `Taxi_Analytics.nyc_taxi_data.dim_date` d2 
+    ON ft.dropoff_date_id = d2.date_id
+LEFT JOIN `Taxi_Analytics.nyc_taxi_data.dim_rate_code` rc 
+    ON ft.rate_code_id = rc.rate_code_id
+LEFT JOIN `Taxi_Analytics.nyc_taxi_data.dim_payment_type` pt 
+    ON ft.payment_type_id = pt.payment_type_id
+LEFT JOIN `Taxi_Analytics.nyc_taxi_data.dim_location` loc 
+    ON ft.do_location_id = loc.location_id;
+
+

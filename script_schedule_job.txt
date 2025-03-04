@@ -1,0 +1,5 @@
+gcloud scheduler jobs create http monthly-taxi-data-job \
+    --schedule="0 0 1 * *" \
+    --uri="https://REGION-PROJECT_ID.cloudfunctions.net/get_data" \
+    --http-method=GET \
+    --time-zone="YOUR_TIME_ZONE"

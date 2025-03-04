@@ -1,0 +1,111 @@
+-- Daily Revenue by Vendor & Payment Type with Ranking
+CREATE OR REPLACE VIEW `Taxi_Analytics.nyc_taxi_data.vw_daily_revenue` AS
+SELECT
+  pickup_date,
+  vendor_name,
+  payment_type_desc,
+  COUNT(trip_id) AS trips_count,
+  SUM(total_amount) AS daily_revenue,
+  SUM(tip_amount) AS total_tips,
+  AVG(trip_distance) AS avg_trip_distance,
+  -- Rank vendors by revenue for each day
+  RANK() OVER(PARTITION BY pickup_date ORDER BY SUM(total_amount) DESC) AS revenue_rank
+FROM `Taxi_Analytics.nyc_taxi_data.analytics_warehouse`
+WHERE pickup_date BETWEEN '2023-01-01' AND '2023-01-31'
+GROUP BY pickup_date, vendor_name, payment_type_desc
+ORDER BY pickup_date, revenue_rank;
+
+-- This query groups data by day, vendor, and payment type, and ranks vendors by revenue for each day.
+
+---------------------------------------------------------------
+-- Hourly Traffic & Revenue Analysis
+CREATE OR REPLACE VIEW `Taxi_Analytics.nyc_taxi_data.vw_hourly_trends` AS
+SELECT
+  EXTRACT(HOUR FROM pickup_datetime) AS pickup_hour,
+  COUNT(trip_id) AS trips_count,
+  SUM(total_amount) AS hourly_revenue,
+  AVG(trip_distance) AS avg_trip_distance,
+  -- Calculate median revenue per hour
+  PERCENTILE_CONT(total_amount, 0.5) OVER (PARTITION BY EXTRACT(HOUR FROM pickup_datetime)) AS median_revenue
+FROM `Taxi_Analytics.nyc_taxi_data.analytics_warehouse`
+WHERE pickup_date BETWEEN '2023-01-01' AND '2023-01-07'
+GROUP BY pickup_hour
+ORDER BY pickup_hour;
+
+-- This query extracts the hour from pickup_datetime, aggregates trips and revenue, and calculates the median revenue per hour.
+
+---------------------------------------------------------------
+-- Fare per Mile Analysis
+CREATE OR REPLACE VIEW `Taxi_Analytics.nyc_taxi_data.vw_fare_per_mile` AS
+SELECT
+  AVG(fare_amount / trip_distance) AS avg_fare_per_mile,
+  MIN(fare_amount / trip_distance) AS min_fare_per_mile,
+  MAX(fare_amount / trip_distance) AS max_fare_per_mile,
+  COUNT(trip_id) AS trips_count
+FROM `Taxi_Analytics.nyc_taxi_data.analytics_warehouse`
+WHERE trip_distance > 0;
+
+-- This query calculates fare-per-mile ratios and aggregates them to provide average, minimum, and maximum ratios, excluding trips with zero distance.
+
+---------------------------------------------------------------
+-- Location-Based Performance Analysis
+CREATE OR REPLACE VIEW `Taxi_Analytics.nyc_taxi_data.vw_top_locations` AS
+SELECT
+  borough,
+  zone,
+  COUNT(trip_id) AS total_trips,
+  SUM(total_amount) AS total_revenue,
+  SUM(tip_amount) AS total_tips,
+  AVG(trip_distance) AS avg_trip_distance
+FROM `Taxi_Analytics.nyc_taxi_data.analytics_warehouse`
+GROUP BY borough, zone
+ORDER BY total_revenue DESC
+LIMIT 10;
+
+-- This query aggregates trip data by location (borough and zone) to identify the top 10 locations by revenue and trip volume.
+
+---------------------------------------------------------------
+-- Monthly Revenue Trend with a Moving Average
+WITH monthly_revenue AS (
+  SELECT
+    FORMAT_DATE('%Y-%m', pickup_date) AS month,
+    SUM(total_amount) AS revenue
+  FROM `Taxi_Analytics.nyc_taxi_data.analytics_warehouse`
+  GROUP BY month
+  ORDER BY month
+)
+SELECT
+  month,
+  revenue,
+  AVG(revenue) OVER (
+    ORDER BY month 
+    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+  ) AS moving_avg_revenue
+FROM monthly_revenue;
+
+-- This query aggregates monthly revenue and applies a window function to calculate a 3-month moving average, smoothing out short-term fluctuations.
+
+
+----------------------------------------------------------------
+--Top 5 boroughs with the most pickup requests for the corresponding day-of-week and hour-of-day.
+-- You can either use a parameter (e.g., @input_datetime) if your environment supports it,
+-- or declare an input variable in a scrip
+
+DECLARE input_datetime DATETIME DEFAULT '2023-01-01 15:00:00';
+
+WITH input_params AS (
+  SELECT
+    EXTRACT(DAYOFWEEK FROM input_datetime) AS input_dayofweek,  -- Returns 1 (Sunday) to 7 (Saturday)
+    EXTRACT(HOUR FROM input_datetime) AS input_hour
+)
+SELECT
+  borough,
+  COUNT(trip_id) AS pickup_requests
+FROM `Taxi_Analytics.nyc_taxi_data.analytics_warehouse`, input_params
+WHERE EXTRACT(DAYOFWEEK FROM pickup_datetime) = input_params.input_dayofweek
+  AND EXTRACT(HOUR FROM pickup_datetime) = input_params.input_hour
+GROUP BY borough
+ORDER BY pickup_requests DESC
+LIMIT 5;
+
+-- This query accepts an input timestamp and returns the top 5 boroughs with the most pickup requests for the corresponding day-of-week and hour-of-day.
