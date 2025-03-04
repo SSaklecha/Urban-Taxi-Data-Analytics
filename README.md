@@ -44,19 +44,6 @@ This project analyzes 85 million trip records from NYC yellow taxis, Uber, and L
 
 ---
 
-## Results
-
-- **Fare Comparison**
-  - **Uber:** Highest average fare at **$20.58**.
-  - **Lyft:** Average fare of **$19.97**.
-  - **Yellow Taxis:** Lowest average fare at **$13.04**.
-
-- **Trip Duration Analysis**
-  - **Lyft:** Longest average trip duration at **17.93 minutes**.
-  - **Yellow Taxis:** Shortest trip distances, indicating variability in service efficiency.
-
----
-
 ## Conclusion & Future Work
 
 - **Service Optimization:**  
