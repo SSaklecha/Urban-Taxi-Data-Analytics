@@ -56,6 +56,53 @@ This project analyzes 85 million trip records from NYC yellow taxis, Uber, and L
   There is potential to apply machine learning algorithms for predicting future ride-hailing patterns and implementing dynamic pricing models based on demand and external factors such as weather.
 
 ---
+## Repository Files
+
+1. **Analytics_SQL_Scripts.txt**  
+   Contains advanced SQL queries used for in-depth analysis of the taxi dataset (e.g., daily revenue, hourly trends, top locations).
+
+2. **BDA Presentation.pptx**  
+   A presentation file summarizing the Big Data Analytics project scope, methodology, and findings.
+
+3. **BDA Project Report.docx**  
+   A detailed project report describing the data sources, objectives, analyses, and results of the taxi data project.
+
+4. **BigDataYellowTaxiCleaning.ipynb**  
+   A Jupyter notebook demonstrating the data cleaning process for NYC Yellow Taxi data, tailored for big data environments.
+
+5. **Data_Cleaning_Final.ipynb**  
+   The finalized data cleaning pipeline in a Jupyter notebook, ensuring quality and consistency before loading into the data warehouse.
+
+6. **Dimension Data.zip**  
+   A compressed file containing dimension data (e.g., CSVs or scripts) that define the star schema structure (vendor, date, rate code, etc.).
+
+7. **ER_Diagram.png**  
+   An Entity Relationship Diagram illustrating the star schema design for the taxi data warehouse, showing fact and dimension tables.
+
+8. **Join_SQL_Script.txt**  
+   SQL scripts demonstrating how to join the fact and dimension tables, creating unified views or materialized tables for analytics.
+
+9. **README.md**  
+   The main documentation file providing an overview of this repository and instructions on how to use its contents.
+
+10. **data_dictionary_trip_records_yellow_taxi.csv**  
+    A CSV file that describes each field in the NYC Yellow Taxi trip records, including data types and definitions.
+
+11. **data_sourcing_api.py**  
+    A Python script for sourcing or ingesting data from an external API, used in the pipeline to fetch and prepare taxi trip data.
+
+12. **requirements.txt**  
+    A list of Python dependencies required to run the notebooks and scripts (use `pip install -r requirements.txt`).
+
+13. **script_schedule_job.txt**  
+    Documentation or instructions for scheduling jobs (e.g., via cron or other schedulers) to automate data processing tasks.
+
+14. **trip_record_user_guide.pdf**  
+    A user guide explaining how to interpret and work with the taxi trip record dataset, including usage tips and best practices.
+
+
+---
+
 
 ## Getting Started
 
@@ -69,14 +116,6 @@ This project analyzes 85 million trip records from NYC yellow taxis, Uber, and L
      ```bash
      pip install -r requirements.txt
      ```
-
-3. **Run the ETL Pipeline**
-   - Use the provided MAGE scripts to extract, transform, and load the data.
-   - Verify that the transformed data is successfully loaded into Google BigQuery.
-
-4. **View Dashboards**
-   - Open the PowerBI and Looker Studio dashboards to interact with the visualizations.
-
 ---
 
 ## License
